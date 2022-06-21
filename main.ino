@@ -5,7 +5,6 @@
 
 LiquidCrystal_I2C lcd = LiquidCrystal_I2C(0x27, 16, 2);
 
-
 Adafruit_MLX90614 mlx = Adafruit_MLX90614();
 SoftwareSerial mySerial(6,7);
 
@@ -18,11 +17,15 @@ bool    stat_serial;
 
 void setup(){
     Serial.begin(9600);
-  
+    
+    // initialize LCD 1602 with I2c
     lcd.init();
     lcd.backlight();
+    
+    // initialize temperature sensor MLX
     mlx.begin();
-  
+    
+    // initialize fingerprint hardware
     finger.begin(57600);
     delay(5);
     if (finger.verifyPassword()) {
@@ -54,52 +57,52 @@ void setup(){
 }
 
 void loop(){
-  temperature = mlx.readObjectTempC();
-  if (Serial.available() > 0){
-    inc = Serial.read();
-    if (inc == 66) {
-      lcd.setCursor(0,0);
-      lcd.print("Masukkan Jari    ");
-      stat_serial = true;
-    } else if (inc == 65){
-      lcd.setCursor(0,0);
-      lcd.print("Pakai Masker     ");
-      stat_serial = false;
-    }
-  }
+      temperature = mlx.readObjectTempC();
+      if (Serial.available() > 0){
+            inc = Serial.read();
+            if (inc == 66) {
+                  lcd.setCursor(0,0);
+                  lcd.print("Masukkan Jari    ");
+                  stat_serial = true;
+            } else if (inc == 65){
+                  lcd.setCursor(0,0);
+                  lcd.print("Pakai Masker     ");
+                  stat_serial = false;
+            }
+      }
 
-  if (stat_serial == true) && (temperature <= 35.00){
-    getFingerprintIDez();
-    Serial.println("aa");
-  } 
+      if (stat_serial == true) && (temperature <= 35.00){
+            getFingerprintIDez();
+            Serial.println("aa");
+      } 
 
-  lcd.setCursor(0,1);
-  lcd.print("suhu: ");
-  lcd.setCursor(6,1);
-  lcd.print(temperature);
-  
-  delay(100);
+      lcd.setCursor(0,1);
+      lcd.print("suhu: ");
+      lcd.setCursor(6,1);
+      lcd.print(temperature);
+
+      delay(100);
 }
 
 int getFingerprintIDez() {
-  uint8_t p = finger.getImage();
-  if (p != FINGERPRINT_OK)  return -1;
+      uint8_t p = finger.getImage();
+      if (p != FINGERPRINT_OK)  return -1;
 
-  p = finger.image2Tz();
-  if (p != FINGERPRINT_OK)  return -1;
+      p = finger.image2Tz();
+      if (p != FINGERPRINT_OK)  return -1;
 
-  p = finger.fingerFastSearch();
-  if (p != FINGERPRINT_OK)  return -1;
+      p = finger.fingerFastSearch();
+      if (p != FINGERPRINT_OK)  return -1;
 
-  Serial.print("&");
-  Serial.print(finger.fingerID);
-  Serial.print("&");
-  Serial.println(temperature);
+      Serial.print("&");
+      Serial.print(finger.fingerID);
+      Serial.print("&");
+      Serial.println(temperature);
 
-  lcd.clear();
-  lcd.setCursor(0,0);
-  lcd.print("terimakasih");
-  delay(2000);
-  lcd.clear();
-  return finger.fingerID;
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print("terimakasih");
+      delay(2000);
+      lcd.clear();
+      return finger.fingerID;
 }
