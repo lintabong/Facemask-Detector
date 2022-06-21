@@ -11,41 +11,46 @@ SoftwareSerial mySerial(6,7);
 
 Adafruit_Fingerprint finger = Adafruit_Fingerprint(&mySerial);
 
-int inc = 0;
-float temperature;
+int     inc;
+float   temperature;
 uint8_t p;
-bool stat_serial;
+bool    stat_serial;
 
 void setup(){
-  Serial.begin(9600);
-  lcd.init();
-  lcd.backlight();
-  mlx.begin();
-  finger.begin(57600);
-  delay(5);
-  if (finger.verifyPassword()) {
-    lcd.setCursor(0,0);
-    lcd.print("fingerprint");
-    lcd.setCursor(0,1);
-    lcd.print("ready");
-  } else {
-    lcd.setCursor(0,0);
-    lcd.print("finger gagal");
-    while (1) { 
-      delay(1000); 
-    }
-  }
+    Serial.begin(9600);
   
-  lcd.clear();
-  finger.getParameters();
-  finger.getTemplateCount();
-  lcd.clear();
-  lcd.setCursor(0,0);
-  lcd.print("data finger: ");
-  lcd.setCursor(14,0);
-  lcd.print(finger.templateCount);
-  delay(500);
-  lcd.clear();
+    lcd.init();
+    lcd.backlight();
+    mlx.begin();
+  
+    finger.begin(57600);
+    delay(5);
+    if (finger.verifyPassword()) {
+        lcd.setCursor(0,0);
+        lcd.print("fingerprint");
+        lcd.setCursor(0,1);
+        lcd.print("ready");
+    } else {
+        lcd.setCursor(0,0);
+        lcd.print("finger gagal");
+        while (1) { 
+            delay(1000); 
+        }
+    }
+    
+    lcd.clear();
+    finger.getParameters();
+    finger.getTemplateCount();
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print("data finger: ");
+    lcd.setCursor(14,0);
+    lcd.print(finger.templateCount);
+    delay(500);
+    lcd.clear();
+  
+    // end setting hardware
+    enc = 0;
 }
 
 void loop(){
